@@ -1,1 +1,1 @@
-http://www.raywenderlich.com/50151/text-kit-tutorial geeft een voorbeeld hoe je
+http://www.raywenderlich.com/50151/text-kit-tutorial gives an example for iOS.

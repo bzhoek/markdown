@@ -57,20 +57,19 @@ class AppDelegate
   def createTextView
     attrs = {NSFontAttributeName: NSFont.fontWithName("Helvetica", size: 15)}
     string = NSAttributedString.alloc.initWithString("Hello, world", attributes: attrs)
-    @textStorage = MarkdownTextStorage.alloc.init
-    @textStorage.appendAttributedString(string)
 
     bounds = @mainWindow.contentView.bounds
-
-    layoutManager = NSLayoutManager.alloc.init
-    @textStorage.addLayoutManager(layoutManager)
 
     containerSize = CGSizeMake(bounds.size.width, CGFLOAT_MAX)
     textContainer = NSTextContainer.alloc.initWithContainerSize(containerSize)
     textContainer.widthTracksTextView = true
 
+    layoutManager = NSLayoutManager.alloc.init
     layoutManager.addTextContainer(textContainer)
-    layoutManager.replaceTextStorage(@textStorage)
+
+    @textStorage = MarkdownTextStorage.alloc.init
+    @textStorage.appendAttributedString(string)
+    @textStorage.addLayoutManager(layoutManager)
 
     NSTextView.alloc.initWithFrame(bounds, textContainer: textContainer)
   end

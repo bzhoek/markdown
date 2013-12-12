@@ -15,7 +15,7 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def replaceCharactersInRange(range, withString: str)
-    #NSLog(@"replaceCharactersInRange:%@ withString:%@", NSStringFromRange(range), str);
+    puts "replaceCharactersInRange: #{NSStringFromRange(range)} withString: #{str}"
 
     self.beginEditing
     @backingStore.replaceCharactersInRange(range, withString: str)
@@ -24,7 +24,7 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def setAttributes(attrs, range: range)
-    #NSLog(@"setAttributes:%@ range:%@", attrs, NSStringFromRange(range));
+    puts "setAttributes: #{attrs} range:#{NSStringFromRange(range)}"
 
     self.beginEditing
     @backingStore.setAttributes(attrs, range: range)
@@ -55,25 +55,24 @@ class AppDelegate
   end
 
   def createTextView
-    attrs = {NSFontAttributeName: NSFont.fontWithName("Helvetica", size: 12)}
+    attrs = {NSFontAttributeName: NSFont.fontWithName("Helvetica", size: 15)}
     string = NSAttributedString.alloc.initWithString("Hello, world", attributes: attrs)
+    @textStorage = MarkdownTextStorage.alloc.init
+    @textStorage.appendAttributedString(string)
 
     bounds = @mainWindow.contentView.bounds
+
+    layoutManager = NSLayoutManager.alloc.init
+    @textStorage.addLayoutManager(layoutManager)
 
     containerSize = CGSizeMake(bounds.size.width, CGFLOAT_MAX)
     textContainer = NSTextContainer.alloc.initWithContainerSize(containerSize)
     textContainer.widthTracksTextView = true
 
-    layoutManager = NSLayoutManager.alloc.init
     layoutManager.addTextContainer(textContainer)
+    layoutManager.replaceTextStorage(@textStorage)
 
-    textStorage = MarkdownTextStorage.new
-    textStorage.appendAttributedString(string)
-    textStorage.addLayoutManager(layoutManager)
-
-    textView = NSTextView.alloc.initWithFrame(bounds, textContainer: textContainer)
-    textView.editable = true
-    textView
+    NSTextView.alloc.initWithFrame(bounds, textContainer: textContainer)
   end
 
 end

@@ -55,7 +55,7 @@ class AppDelegate
   end
 
   def createTextView
-    attrs = {NSFontAttributeName: NSFont.fontWithName("Helvetica", size: 15)}
+    attrs = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17)}
     string = NSAttributedString.alloc.initWithString("Hello, world", attributes: attrs)
 
     bounds = @mainWindow.contentView.bounds

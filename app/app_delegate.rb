@@ -34,13 +34,8 @@ class MarkdownTextStorage < NSTextStorage
 
   def processEditing
     puts "edited: " + self.editedRange.inspect
-    self.performReplacementsForRange(self.editedRange)
     super
-  end
-
-  def performReplacementsForRange(changedRange)
-    lineRange = NSUnionRange(changedRange, @backingStore.string.lineRangeForRange(NSMakeRange(changedRange.location, 0)))
-    #lineRange = NSUnionRange(changedRange, @backingStore.string.lineRangeForRange(NSMakeRange(NSMaxRange(changedRange), 0)))
+    lineRange = NSUnionRange(self.editedRange, @backingStore.string.lineRangeForRange(NSMakeRange(self.editedRange.location, 0)))
     self.applyStylesToRange(lineRange)
   end
 

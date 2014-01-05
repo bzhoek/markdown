@@ -33,14 +33,15 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def processEditing
-    puts "edited: " + self.editedRange.inspect
+    puts "edited: #{self.editedRange.inspect}"
     super
     lineRange = NSUnionRange(self.editedRange, @backingStore.string.lineRangeForRange(NSMakeRange(self.editedRange.location, 0)))
     self.applyStylesToRange(lineRange)
   end
 
   def applyStylesToRange(searchRange)
-    puts "search: " + searchRange.inspect
+    puts "search: #{searchRange.inspect}: #{@backingStore.string.substringWithRange(searchRange)}"
+
     normalFont = NSFont.fontWithName("Avenir Next", size: 17)
 
     replacements = {
@@ -56,7 +57,6 @@ class MarkdownTextStorage < NSTextStorage
       attributes = {NSFontAttributeName => font}
       regex.enumerateMatchesInString(@backingStore.string, options: 0, range: searchRange,
         usingBlock: lambda do |match, flags, stop|
-          puts match.inspect
           matchRange = match.rangeAtIndex(1)
           self.addAttributes(attributes, range: matchRange)
           if NSMaxRange(matchRange) + 1 < self.length

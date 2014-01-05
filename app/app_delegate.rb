@@ -33,37 +33,44 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def processEditing
-    puts self.editedRange.inspect
+    puts "edited: " + self.editedRange.inspect
     self.performReplacementsForRange(self.editedRange)
     super
   end
 
   def performReplacementsForRange(changedRange)
-    extendedRange = NSUnionRange(changedRange, @backingStore.string.lineRangeForRange(NSMakeRange(changedRange.location, 0)))
-    #extendedRange = NSUnionRange(changedRange, @backingStore.string.lineRangeForRange(NSMakeRange(NSMaxRange(changedRange), 0)))
-    self.applyStylesToRange(extendedRange)
+    lineRange = NSUnionRange(changedRange, @backingStore.string.lineRangeForRange(NSMakeRange(changedRange.location, 0)))
+    #lineRange = NSUnionRange(changedRange, @backingStore.string.lineRangeForRange(NSMakeRange(NSMaxRange(changedRange), 0)))
+    self.applyStylesToRange(lineRange)
   end
 
   def applyStylesToRange(searchRange)
-    boldFont = NSFontManager.sharedFontManager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 17)
+    puts "search: " + searchRange.inspect
     normalFont = NSFont.fontWithName("Avenir Next", size: 17)
 
-    regexStr = "(\\*\\w+(\\s\\w+)*\\*)\\s"
-    regex = NSRegularExpression.regularExpressionWithPattern(regexStr, options: 0, error: nil)
+    replacements = {
+      "(\\*\\w+(\\s\\w+)*\\*)\\s" => NSFontManager.sharedFontManager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 17),
+      "(_\\w+(\\s\\w+)*_)\\s" => NSFontManager.sharedFontManager.fontWithFamily("Avenir Next", traits: NSItalicFontMask, weight: 0, size: 17),
+      "(`\\w+(\\s\\w+)*`)\\s" => NSFontManager.sharedFontManager.fontWithFamily("Menlo", traits: 0, weight: 0, size: 17)
+    }
 
-    boldAttributes = {NSFontAttributeName => boldFont}
     normalAttributes = {NSFontAttributeName => normalFont}
 
-    regex.enumerateMatchesInString(@backingStore.string, options: 0, range: searchRange,
-      usingBlock: lambda do |match, flags, stop|
-        puts match.inspect
-        matchRange = match.rangeAtIndex(1)
-        self.addAttributes(boldAttributes, range: matchRange)
-        if (NSMaxRange(matchRange) + 1 < self.length)
-          self.addAttributes(normalAttributes, range: NSMakeRange(NSMaxRange(matchRange) + 1, 1))
+    replacements.each do |expression, font|
+      regex = NSRegularExpression.regularExpressionWithPattern(expression, options: 0, error: nil)
+      attributes = {NSFontAttributeName => font}
+      regex.enumerateMatchesInString(@backingStore.string, options: 0, range: searchRange,
+        usingBlock: lambda do |match, flags, stop|
+          puts match.inspect
+          matchRange = match.rangeAtIndex(1)
+          self.addAttributes(attributes, range: matchRange)
+          if NSMaxRange(matchRange) + 1 < self.length
+            self.addAttributes(normalAttributes, range: NSMakeRange(NSMaxRange(matchRange) + 1, 1))
+          end
         end
-      end
-    )
+      )
+    end
+
   end
 
 end
@@ -90,7 +97,7 @@ class AppDelegate
 
   def createTextView
     attrs = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17)}
-    string = NSAttributedString.alloc.initWithString("Hello, world", attributes: attrs)
+    string = NSAttributedString.alloc.initWithString("Hello, _world_ , say something *bold* and `quoted` .", attributes: attrs)
 
     bounds = @mainWindow.contentView.bounds
 

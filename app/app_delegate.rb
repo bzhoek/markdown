@@ -17,19 +17,19 @@ class MarkdownTextStorage < NSTextStorage
   def replaceCharactersInRange(range, withString: str)
     puts "replaceCharactersInRange: #{NSStringFromRange(range)} withString: #{str}"
 
-    self.beginEditing
-    @backingStore.replaceCharactersInRange(range, withString: str)
-    self.edited(NSTextStorageEditedCharacters | NSTextStorageEditedAttributes, range: range, changeInLength: str.length - range.length)
-    self.endEditing
+    groupEdits do
+      @backingStore.replaceCharactersInRange(range, withString: str)
+      self.edited(NSTextStorageEditedCharacters | NSTextStorageEditedAttributes, range: range, changeInLength: str.length - range.length)
+    end
   end
 
   def setAttributes(attrs, range: range)
     puts "setAttributes: #{attrs} range:#{NSStringFromRange(range)}"
 
-    self.beginEditing
-    @backingStore.setAttributes(attrs, range: range)
-    self.edited(NSTextStorageEditedAttributes, range: range, changeInLength: 0)
-    self.endEditing
+    groupEdits do
+      @backingStore.setAttributes(attrs, range: range)
+      self.edited(NSTextStorageEditedAttributes, range: range, changeInLength: 0)
+    end
   end
 
   def processEditing
@@ -37,6 +37,12 @@ class MarkdownTextStorage < NSTextStorage
     super
     lineRange = NSUnionRange(self.editedRange, @backingStore.string.lineRangeForRange(NSMakeRange(self.editedRange.location, 0)))
     self.applyStylesToRange(lineRange)
+  end
+
+  def groupEdits
+    self.beginEditing
+    yield if block_given?
+    self.endEditing
   end
 
   def applyStylesToRange(searchRange)
@@ -51,6 +57,7 @@ class MarkdownTextStorage < NSTextStorage
     }
 
     normalAttributes = {NSFontAttributeName => normalFont}
+    self.addAttributes(normalAttributes, range: searchRange)
 
     replacements.each do |expression, font|
       regex = NSRegularExpression.regularExpressionWithPattern(expression, options: 0, error: nil)

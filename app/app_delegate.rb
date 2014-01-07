@@ -110,9 +110,12 @@ class AppDelegate
     @mainWindow.orderFrontRegardless
 
     @textView = createTextView
+    @textView.setSelectedRange(NSMakeRange(2, 0))
 
     @mainWindow.contentView.addSubview(@textView)
+    @mainWindow.makeFirstResponder(@textView)
   end
+
 
   def createTextView
     attrs = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17)}

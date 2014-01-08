@@ -92,6 +92,8 @@ class MarkdownTextStorage < NSTextStorage
 
   end
 
+
+
 end
 
 class AppDelegate
@@ -109,15 +111,13 @@ class AppDelegate
     @mainWindow.title = NSBundle.mainBundle.infoDictionary['CFBundleName']
     @mainWindow.orderFrontRegardless
 
-    @textView = createTextView
-    @textView.setSelectedRange(NSMakeRange(2, 0))
-
+    @textView = buildTextView
     @mainWindow.contentView.addSubview(@textView)
     @mainWindow.makeFirstResponder(@textView)
   end
 
 
-  def createTextView
+  def buildTextView
     attrs = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17)}
     string = NSAttributedString.alloc.initWithString("# Start\nHello, _world_ , say something *bold* and `quoted` .", attributes: attrs)
 
@@ -134,7 +134,10 @@ class AppDelegate
     @textStorage.appendAttributedString(string)
     @textStorage.addLayoutManager(layoutManager)
 
-    NSTextView.alloc.initWithFrame(bounds, textContainer: textContainer)
+    textView = NSTextView.alloc.initWithFrame(bounds, textContainer: textContainer)
+    textView.allowsUndo = true
+    textView.setSelectedRange(NSMakeRange(2, 0))
+    textView
   end
 
 end

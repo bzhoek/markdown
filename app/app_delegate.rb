@@ -56,6 +56,11 @@ class MarkdownTextStorage < NSTextStorage
     super
     lineRange = NSUnionRange(self.editedRange, @backingStore.string.lineRangeForRange(NSMakeRange(self.editedRange.location, 0)))
     self.applyStylesToRange(lineRange)
+    # process next line in case it was split
+    if lineRange.location + lineRange.length + 1 < @backingStore.string.length
+      lineRange = @backingStore.string.lineRangeForRange(NSMakeRange(lineRange.location + lineRange.length + 1, 0))
+      self.applyStylesToRange(lineRange)
+    end
   end
 
   def groupEdits
@@ -91,7 +96,6 @@ class MarkdownTextStorage < NSTextStorage
     end
 
   end
-
 
 
 end

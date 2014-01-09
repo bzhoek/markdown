@@ -12,10 +12,10 @@ class MarkdownTextStorage < NSTextStorage
 
     font_manager = NSFontManager.sharedFontManager
     @paragraphs = {
-      "^#\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 38)},
-      "^##\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 30)},
-      "^###\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 23)},
-      "^####\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 17)},
+      "^(#)\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 38)},
+      "^(##)\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 30)},
+      "^(###)\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 23)},
+      "^(####)\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 17)},
       "^\\t" => {NSFontAttributeName => font_manager.fontWithFamily("Menlo", traits: 0, weight: 0, size: 15),
         NSBackgroundColorAttributeName => NSColor.lightGrayColor}
     }
@@ -83,6 +83,9 @@ class MarkdownTextStorage < NSTextStorage
       regex.enumerateMatchesInString(@backingStore.string, options: 0, range: searchRange,
         usingBlock: lambda do |match, flags, stop|
           self.addAttributes(hash, range: searchRange)
+          if match.numberOfRanges > 1
+            self.addAttributes({NSForegroundColorAttributeName => NSColor.lightGrayColor}, range: match.rangeAtIndex(1))
+          end
         end
       )
     end

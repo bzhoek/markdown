@@ -8,20 +8,25 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def createStyles
-    @normal = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17)}
+    @normal = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17), NSBackgroundColorAttributeName => NSColor.whiteColor}
 
+    font_manager = NSFontManager.sharedFontManager
     @paragraphs = {
-      "^#\\s" => NSFontManager.sharedFontManager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 23),
-      "^##\\s" => NSFontManager.sharedFontManager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 21),
-      "^###\\s" => NSFontManager.sharedFontManager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 19),
-      "^####\\s" => NSFontManager.sharedFontManager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 17),
-      "^\\t" => NSFontManager.sharedFontManager.fontWithFamily("Menlo", traits: 0, weight: 0, size: 17)
+      "^#\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 38)},
+      "^##\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 30)},
+      "^###\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 23)},
+      "^####\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 17)},
+      "^\\t" => {NSFontAttributeName => font_manager.fontWithFamily("Menlo", traits: 0, weight: 0, size: 15),
+        NSBackgroundColorAttributeName => NSColor.lightGrayColor}
     }
 
     @replacements = {
-      "(\\*\\w+(\\s\\w+)*\\*)\\s" => NSFontManager.sharedFontManager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 17),
-      "(_\\w+(\\s\\w+)*_)\\s" => NSFontManager.sharedFontManager.fontWithFamily("Avenir Next", traits: NSItalicFontMask, weight: 0, size: 17),
-      "(`\\w+(\\s\\w+)*`)\\s" => NSFontManager.sharedFontManager.fontWithFamily("Menlo", traits: 0, weight: 0, size: 17)
+      "(\\*\\w+(\\s\\w+)*\\*)\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 17)},
+      "(_\\w+(\\s\\w+)*_)\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSItalicFontMask, weight: 5, size: 17)},
+      "(-\\w+(\\s\\w+)*-)\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSItalicFontMask, weight: 5, size: 17),
+        NSStrikethroughStyleAttributeName => NSUnderlineStyleSingle},
+      "(`\\w+(\\s\\w+)*`)\\s" => {NSFontAttributeName => font_manager.fontWithFamily("Menlo", traits: 0, weight: 5, size: 15),
+        NSBackgroundColorAttributeName => NSColor.lightGrayColor}
     }
   end
 
@@ -73,21 +78,21 @@ class MarkdownTextStorage < NSTextStorage
     puts "search: #{searchRange.inspect}: #{@backingStore.string.substringWithRange(searchRange)}"
 
     self.addAttributes(@normal, range: searchRange)
-    @paragraphs.each do |expression, font|
+    @paragraphs.each do |expression, hash|
       regex = NSRegularExpression.regularExpressionWithPattern(expression, options: 0, error: nil)
       regex.enumerateMatchesInString(@backingStore.string, options: 0, range: searchRange,
         usingBlock: lambda do |match, flags, stop|
-          self.addAttributes({NSFontAttributeName => font}, range: searchRange)
+          self.addAttributes(hash, range: searchRange)
         end
       )
     end
 
-    @replacements.each do |expression, font|
+    @replacements.each do |expression, hash|
       regex = NSRegularExpression.regularExpressionWithPattern(expression, options: 0, error: nil)
       regex.enumerateMatchesInString(@backingStore.string, options: 0, range: searchRange,
         usingBlock: lambda do |match, flags, stop|
           matchRange = match.rangeAtIndex(1)
-          self.addAttributes({NSFontAttributeName => font}, range: matchRange)
+          self.addAttributes(hash, range: matchRange)
           if NSMaxRange(matchRange) + 1 < self.length
             self.addAttributes(@normal, range: NSMakeRange(NSMaxRange(matchRange) + 1, 1))
           end
@@ -123,7 +128,7 @@ class AppDelegate
 
   def buildTextView
     attrs = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17)}
-    string = NSAttributedString.alloc.initWithString("# Start\nHello, _world_ , say something *bold* and `quoted` .", attributes: attrs)
+    string = NSAttributedString.alloc.initWithString("# Start\nHello, _world_ , -strike- that, but say something *bold* and `quoted` .", attributes: attrs)
 
     bounds = @mainWindow.contentView.bounds
 

@@ -10,4 +10,15 @@ describe "regular expressions" do
     )
   end
 
+  it "counts lines in a string" do
+    str = "# Start\nHello, _world_ , -strike- that, but say something *bold* and `quoted` ."
+    lines = 0
+    index = 0
+    while index < str.length
+      lines += 1
+      index = NSMaxRange(str.lineRangeForRange(NSMakeRange(index, 0)))
+    end
+    lines.should == 2
+  end
+
 end

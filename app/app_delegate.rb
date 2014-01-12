@@ -8,7 +8,9 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def createStyles
-    @normal = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17), NSBackgroundColorAttributeName => NSColor.whiteColor}
+    @normal = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17),
+      NSBackgroundColorAttributeName => NSColor.whiteColor,
+      NSStrikethroughStyleAttributeName => NSUnderlineStyleNone}
 
     font_manager = NSFontManager.sharedFontManager
     @paragraphs = {
@@ -48,7 +50,7 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def setAttributes(attrs, range: range)
-    puts "setAttributes: #{attrs} range:#{NSStringFromRange(range)}"
+    #puts "setAttributes: #{attrs} range:#{NSStringFromRange(range)}"
 
     groupEdits do
       @backingStore.setAttributes(attrs, range: range)
@@ -57,15 +59,24 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def processEditing
-    puts "edited: #{self.editedRange.inspect}"
     super
-    lineRange = NSUnionRange(self.editedRange, @backingStore.string.lineRangeForRange(NSMakeRange(self.editedRange.location, 0)))
-    self.applyStylesToRange(lineRange)
-    # process next line in case it was split
-    if lineRange.location + lineRange.length + 1 < @backingStore.string.length
-      lineRange = @backingStore.string.lineRangeForRange(NSMakeRange(lineRange.location + lineRange.length + 1, 0))
-      self.applyStylesToRange(lineRange)
+    puts "editedRange: #{self.editedRange.inspect}"
+    if @backingStore.string.substringWithRange(self.editedRange) == "\n"
+      line = rangeForLocation(self.editedRange.location+1)
+      puts "next: #{lineForRange(line).dump}"
+      self.applyStylesToRange(line)
     end
+    line = rangeForLocation(self.editedRange.location)
+    puts "current: #{lineForRange(line).dump}"
+    self.applyStylesToRange(line)
+  end
+
+  def rangeForLocation(location)
+    @backingStore.string.lineRangeForRange(NSMakeRange(location, 0))
+  end
+
+  def lineForRange(range)
+    @backingStore.string.substringWithRange(range)
   end
 
   def groupEdits
@@ -75,7 +86,7 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def applyStylesToRange(searchRange)
-    puts "search: #{searchRange.inspect}: #{@backingStore.string.substringWithRange(searchRange)}"
+    puts "applyStylesToRange: #{searchRange.inspect}: #{@backingStore.string.substringWithRange(searchRange)}"
 
     self.addAttributes(@normal, range: searchRange)
     @paragraphs.each do |expression, hash|

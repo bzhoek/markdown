@@ -60,18 +60,23 @@ class MarkdownTextStorage < NSTextStorage
 
   def processEditing
     super
-    puts "editedRange: #{self.editedRange.inspect}"
-    if self.editedRange.length == 1 && stringForRange(self.editedRange) == "\n"
-      line = lineRangeForLocation(self.editedRange.location+1)
+    processEditingRange(self.editedRange)
+  end
+
+  def processEditingRange(range)
+    puts "editedRange: #{range.inspect}"
+    if range.length == 1 && stringForRange(range) == "\n"
+      line = lineRangeForLocation(range.location+1)
       puts "next: #{stringForRange(line).dump}"
       self.applyStylesToRange(line)
     end
 
-    index = 0
-    while index <= self.editedRange.length
-      line = lineRangeForLocation(self.editedRange.location + index)
-      puts "line: #{line.inspect}"
-      puts "current: #{stringForRange(line).dump}"
+    line = lineRangeForLocation(range.location)
+    self.applyStylesToRange(line)
+
+    index = line.length
+    while index < range.length
+      line = lineRangeForLocation(range.location + index)
       self.applyStylesToRange(line)
       index += line.length
     end

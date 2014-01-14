@@ -96,25 +96,33 @@ class MarkdownTextStorage < NSTextStorage
     self.endEditing
   end
 
-  def applyStylesToRange(searchRange)
-    puts "applyStylesToRange: #{searchRange.inspect}: #{stringForRange(searchRange)}"
+  def applyStylesToRange(range)
+    puts "applyStylesToRange: #{range.inspect}: #{stringForRange(range)}"
 
-    self.addAttributes(@normal, range: searchRange)
+    self.addAttributes(@normal, range: range)
+
+    applyParagraphStyles(range)
+    applyCharacterStyles(range)
+  end
+
+  def applyParagraphStyles(range)
     @paragraphs.each do |expression, hash|
       regex = NSRegularExpression.regularExpressionWithPattern(expression, options: 0, error: nil)
-      regex.enumerateMatchesInString(@backingStore.string, options: 0, range: searchRange,
+      regex.enumerateMatchesInString(@backingStore.string, options: 0, range: range,
         usingBlock: lambda do |match, flags, stop|
-          self.addAttributes(hash, range: searchRange)
+          self.addAttributes(hash, range: range)
           if match.numberOfRanges > 1
             self.addAttributes({NSForegroundColorAttributeName => NSColor.lightGrayColor}, range: match.rangeAtIndex(1))
           end
         end
       )
     end
+  end
 
+  def applyCharacterStyles(range)
     @replacements.each do |expression, hash|
       regex = NSRegularExpression.regularExpressionWithPattern(expression, options: 0, error: nil)
-      regex.enumerateMatchesInString(@backingStore.string, options: 0, range: searchRange,
+      regex.enumerateMatchesInString(@backingStore.string, options: 0, range: range,
         usingBlock: lambda do |match, flags, stop|
           matchRange = match.rangeAtIndex(1)
           self.addAttributes(hash, range: matchRange)
@@ -124,7 +132,6 @@ class MarkdownTextStorage < NSTextStorage
         end
       )
     end
-
   end
 
 end

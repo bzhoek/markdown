@@ -66,9 +66,15 @@ class MarkdownTextStorage < NSTextStorage
       puts "next: #{stringForRange(line).dump}"
       self.applyStylesToRange(line)
     end
-    line = lineRangeForLocation(self.editedRange.location)
-    puts "current: #{stringForRange(line).dump}"
-    self.applyStylesToRange(line)
+
+    index = 0
+    while index <= self.editedRange.length
+      line = lineRangeForLocation(self.editedRange.location + index)
+      puts "line: #{line.inspect}"
+      puts "current: #{stringForRange(line).dump}"
+      self.applyStylesToRange(line)
+      index += line.length
+    end
   end
 
   def lineRangeForLocation(location)

@@ -61,21 +61,21 @@ class MarkdownTextStorage < NSTextStorage
   def processEditing
     super
     puts "editedRange: #{self.editedRange.inspect}"
-    if @backingStore.string.substringWithRange(self.editedRange) == "\n"
-      line = rangeForLocation(self.editedRange.location+1)
-      puts "next: #{lineForRange(line).dump}"
+    if self.editedRange.length == 1 && stringForRange(self.editedRange) == "\n"
+      line = lineRangeForLocation(self.editedRange.location+1)
+      puts "next: #{stringForRange(line).dump}"
       self.applyStylesToRange(line)
     end
-    line = rangeForLocation(self.editedRange.location)
-    puts "current: #{lineForRange(line).dump}"
+    line = lineRangeForLocation(self.editedRange.location)
+    puts "current: #{stringForRange(line).dump}"
     self.applyStylesToRange(line)
   end
 
-  def rangeForLocation(location)
+  def lineRangeForLocation(location)
     @backingStore.string.lineRangeForRange(NSMakeRange(location, 0))
   end
 
-  def lineForRange(range)
+  def stringForRange(range)
     @backingStore.string.substringWithRange(range)
   end
 
@@ -86,7 +86,7 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def applyStylesToRange(searchRange)
-    puts "applyStylesToRange: #{searchRange.inspect}: #{@backingStore.string.substringWithRange(searchRange)}"
+    puts "applyStylesToRange: #{searchRange.inspect}: #{stringForRange(searchRange)}"
 
     self.addAttributes(@normal, range: searchRange)
     @paragraphs.each do |expression, hash|

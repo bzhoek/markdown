@@ -1,5 +1,7 @@
 class AppDelegate
 
+  BACKGROUND = NSColor.colorWithCalibratedRed(239/255.0, green: 239/255.0, blue: 239/255.0, alpha: 1.0)
+
   def applicationDidFinishLaunching(notification)
     buildMenu
     buildWindow
@@ -53,6 +55,7 @@ class AppDelegate
     textView.verticallyResizable = true
     textView.horizontallyResizable = false
     textView.autoresizingMask = NSViewWidthSizable
+    textView.backgroundColor = BACKGROUND
     textView
   end
 

@@ -1,5 +1,9 @@
 class MarkdownTextStorage < NSTextStorage
 
+  BACKGROUND = NSColor.colorWithCalibratedRed(239/255.0, green: 239/255.0, blue: 239/255.0, alpha: 1.0)
+  TEXT = NSColor.colorWithCalibratedWhite(46/255.0, alpha: 1.0)
+  LIGHT = NSColor.colorWithCalibratedWhite(168/255.0, alpha: 1.0)
+
   def init
     super
     @backingStore = NSMutableAttributedString.new
@@ -9,7 +13,8 @@ class MarkdownTextStorage < NSTextStorage
 
   def createStyles
     @normal = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17),
-      NSBackgroundColorAttributeName => NSColor.whiteColor,
+      NSForegroundColorAttributeName => TEXT,
+      NSBackgroundColorAttributeName => BACKGROUND,
       NSStrikethroughStyleAttributeName => NSUnderlineStyleNone}
 
     font_manager = NSFontManager.sharedFontManager
@@ -112,7 +117,7 @@ class MarkdownTextStorage < NSTextStorage
         usingBlock: lambda do |match, flags, stop|
           self.addAttributes(hash, range: range)
           if match.numberOfRanges > 1
-            self.addAttributes({NSForegroundColorAttributeName => NSColor.lightGrayColor}, range: match.rangeAtIndex(1))
+            self.addAttributes({NSForegroundColorAttributeName => LIGHT}, range: match.rangeAtIndex(1))
           end
         end
       )

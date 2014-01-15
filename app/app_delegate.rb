@@ -13,19 +13,28 @@ class AppDelegate
     @mainWindow.title = NSBundle.mainBundle.infoDictionary['CFBundleName']
     @mainWindow.orderFrontRegardless
 
-    @textView = buildTextView
-    @mainWindow.contentView.addSubview(@textView)
-    @mainWindow.makeFirstResponder(@textView)
+    @scrollView = buildScrollView
+    @mainWindow.contentView= @scrollView
+    @mainWindow.makeFirstResponder(@scrollView)
   end
 
 
-  def buildTextView
+  def buildScrollView
+    scrollView = NSScrollView.alloc.initWithFrame(@mainWindow.contentView.frame)
+    contentSize = scrollView.contentSize
+    scrollView.borderType = NSNoBorder
+    scrollView.hasVerticalScroller = true
+    scrollView.hasHorizontalScroller= false
+    scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable
+    scrollView.documentView = buildTextView(contentSize)
+    scrollView
+  end
+
+  def buildTextView(contentSize)
     attrs = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17)}
     string = NSAttributedString.alloc.initWithString("# Start\nHello, _world_ , -strike- that, but say something *bold* and `quoted` .", attributes: attrs)
 
-    bounds = @mainWindow.contentView.bounds
-
-    containerSize = CGSizeMake(bounds.size.width, CGFLOAT_MAX)
+    containerSize = CGSizeMake(contentSize.width, CGFLOAT_MAX)
     textContainer = NSTextContainer.alloc.initWithContainerSize(containerSize)
     textContainer.widthTracksTextView = true
 
@@ -36,9 +45,14 @@ class AppDelegate
     @textStorage.appendAttributedString(string)
     @textStorage.addLayoutManager(layoutManager)
 
-    textView = NSTextView.alloc.initWithFrame(bounds, textContainer: textContainer)
+    textView = NSTextView.alloc.initWithFrame(NSMakeRect(0, 0, contentSize.width, contentSize.height), textContainer: textContainer)
     textView.allowsUndo = true
     textView.setSelectedRange(NSMakeRange(2, 0))
+    textView.minSize = NSMakeSize(0, contentSize.height)
+    textView.maxSize = NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX)
+    textView.verticallyResizable = true
+    textView.horizontallyResizable = false
+    textView.autoresizingMask = NSViewWidthSizable
     textView
   end
 

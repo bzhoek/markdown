@@ -1,4 +1,7 @@
 class AppDelegate
+
+  attr_reader :mainMenu
+
   def buildMenu
     @mainMenu = NSMenu.new
 

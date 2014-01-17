@@ -12,14 +12,28 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def createStyles
+    normal = NSMutableParagraphStyle.defaultParagraphStyle.mutableCopy
+    normal.lineHeightMultiple = 1.2
+    normal.headIndent = 30
+    normal.tailIndent = -25
+    normal.firstLineHeadIndent = 30
+
     @normal = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17),
       NSForegroundColorAttributeName => TEXT,
       NSBackgroundColorAttributeName => BACKGROUND,
-      NSStrikethroughStyleAttributeName => NSUnderlineStyleNone}
+      NSStrikethroughStyleAttributeName => NSUnderlineStyleNone,
+      NSParagraphStyleAttributeName => normal}
+
+    heading = NSMutableParagraphStyle.defaultParagraphStyle.mutableCopy
+    heading.lineHeightMultiple = 1.2
+    heading.headIndent = 12
+    heading.tailIndent = -25
+    heading.firstLineHeadIndent = 12
 
     font_manager = NSFontManager.sharedFontManager
     @paragraphs = {
-      "^(#)\\s" => [{NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 23)},
+      "^(#)\\s" => [{NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 23),
+        NSParagraphStyleAttributeName => heading},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 23),
           NSForegroundColorAttributeName => LIGHT}],
       "^(##)\\s" => [{NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 21)},

@@ -50,20 +50,35 @@ class MarkdownTextStorage < NSTextStorage
     }
 
     @replacements = {
-      "(\\*)\\w+(?:\\s\\w+)*(\\*)\\s" => [{NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 17)},
+      "(\\*)(\\w+(?:\\s\\w+)*)(\\*)\\s" => [
+        {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
+          NSForegroundColorAttributeName => LIGHT},
+        {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 17)},
+        {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
+          NSForegroundColorAttributeName => LIGHT}
+      ],
+      "(_)(\\w+(?:\\s\\w+)*)(_)\\s" => [
+        {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
+          NSForegroundColorAttributeName => LIGHT},
+        {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSItalicFontMask, weight: 5, size: 17)},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
           NSForegroundColorAttributeName => LIGHT}],
-      "(_)\\w+(?:\\s\\w+)*(_)\\s" => [{NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSItalicFontMask, weight: 5, size: 17)},
+      "(-)(\\w+(?:\\s\\w+)*)(-)\\s" => [
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
-          NSForegroundColorAttributeName => LIGHT}],
-      "(-)\\w+(?:\\s\\w+)*(-)\\s" => [{NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSItalicFontMask, weight: 5, size: 17),
-        NSStrikethroughStyleAttributeName => NSUnderlineStyleSingle},
+          NSForegroundColorAttributeName => LIGHT},
+        {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSItalicFontMask, weight: 5, size: 17),
+          NSStrikethroughStyleAttributeName => NSUnderlineStyleSingle},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
-          NSForegroundColorAttributeName => LIGHT}],
-      "(`)\\w+(\\s\\w+)*(`)\\s" => [{NSFontAttributeName => font_manager.fontWithFamily("Menlo", traits: 0, weight: 5, size: 15),
-        NSBackgroundColorAttributeName => NSColor.lightGrayColor},
+          NSForegroundColorAttributeName => LIGHT}
+      ],
+      "(`)(\\w+(?:\\s\\w+)*)(`)\\s" => [
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
-          NSForegroundColorAttributeName => NSColor.darkGrayColor}]
+          NSForegroundColorAttributeName => LIGHT},
+        {NSFontAttributeName => font_manager.fontWithFamily("Menlo", traits: 0, weight: 5, size: 15),
+        NSBackgroundColorAttributeName => LIGHT},
+        {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
+          NSForegroundColorAttributeName => LIGHT}
+      ]
     }
   end
 
@@ -159,9 +174,9 @@ class MarkdownTextStorage < NSTextStorage
       regex = NSRegularExpression.regularExpressionWithPattern(expression, options: 0, error: nil)
       regex.enumerateMatchesInString(@backingStore.string, options: 0, range: range,
         usingBlock: lambda do |match, flags, stop|
-          self.addAttributes(hash[0], range: match.rangeAtIndex(0))
-          for i in 1..(match.numberOfRanges-1)
-            self.addAttributes(hash[1], range: match.rangeAtIndex(i))
+          raise "#{match.numberOfRanges} matches, but only #{hash.length} formats for #{expression}" if hash.length != match.numberOfRanges - 1
+          hash.each_with_index do |format, i|
+            self.addAttributes(format, range: match.rangeAtIndex(i+1))
           end
         end
       )

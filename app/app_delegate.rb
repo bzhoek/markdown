@@ -34,7 +34,7 @@ class AppDelegate
 
   def buildTextView(contentSize)
     attrs = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17)}
-    string = NSAttributedString.alloc.initWithString("# Start\nHello, _world_ , -strike- that, but say something *bold* and `quoted` .", attributes: attrs)
+    string = NSAttributedString.alloc.initWithString("# Start\nHello, _world_ , -strike- that, but say something *bold* and `quoted` .\n\n* You would expect multi-line bullets to indent\n\tThis is code\n\tAnd this too", attributes: attrs)
 
     containerSize = CGSizeMake(contentSize.width, CGFLOAT_MAX)
     textContainer = NSTextContainer.alloc.initWithContainerSize(containerSize)

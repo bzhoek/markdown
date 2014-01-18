@@ -30,6 +30,12 @@ class MarkdownTextStorage < NSTextStorage
     heading.tailIndent = -25
     heading.firstLineHeadIndent = 12
 
+    bullet = NSMutableParagraphStyle.defaultParagraphStyle.mutableCopy
+    bullet.lineHeightMultiple = 1.2
+    bullet.headIndent = 42
+    bullet.tailIndent = -25
+    bullet.firstLineHeadIndent = 30
+
     font_manager = NSFontManager.sharedFontManager
     @paragraphs = {
       "^(#)\\s" => [{NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 23),
@@ -45,6 +51,12 @@ class MarkdownTextStorage < NSTextStorage
       "^(####)\\s" => [{NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 17)},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
           NSForegroundColorAttributeName => LIGHT}],
+      "^(\\*)\\s" => [
+        {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
+          NSParagraphStyleAttributeName => bullet},
+        {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
+          NSForegroundColorAttributeName => LIGHT}
+      ],
       "^\\t" => [{NSFontAttributeName => font_manager.fontWithFamily("Menlo", traits: 0, weight: 0, size: 15),
         NSBackgroundColorAttributeName => NSColor.lightGrayColor}]
     }
@@ -75,7 +87,7 @@ class MarkdownTextStorage < NSTextStorage
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
           NSForegroundColorAttributeName => LIGHT},
         {NSFontAttributeName => font_manager.fontWithFamily("Menlo", traits: 0, weight: 5, size: 15),
-        NSBackgroundColorAttributeName => LIGHT},
+          NSBackgroundColorAttributeName => LIGHT},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
           NSForegroundColorAttributeName => LIGHT}
       ]

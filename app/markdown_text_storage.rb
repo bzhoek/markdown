@@ -38,27 +38,39 @@ class MarkdownTextStorage < NSTextStorage
 
     font_manager = NSFontManager.sharedFontManager
     @paragraphs = {
-      "^(#)\\s" => [{NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 23),
-        NSParagraphStyleAttributeName => heading},
+      "^(#)\\s" => [
+        {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 23),
+          NSParagraphStyleAttributeName => heading},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 23),
-          NSForegroundColorAttributeName => LIGHT}],
-      "^(##)\\s" => [{NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 21)},
+          NSForegroundColorAttributeName => LIGHT}
+      ],
+      "^(##)\\s" => [
+        {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 21)},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 21),
-          NSForegroundColorAttributeName => LIGHT}],
-      "^(###)\\s" => [{NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 19)},
+          NSForegroundColorAttributeName => LIGHT}
+      ],
+      "^(###)\\s" => [
+        {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 19)},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 19),
-          NSForegroundColorAttributeName => LIGHT}],
-      "^(####)\\s" => [{NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 17)},
+          NSForegroundColorAttributeName => LIGHT}
+      ],
+      "^(####)\\s" => [
+        {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 17)},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
-          NSForegroundColorAttributeName => LIGHT}],
+          NSForegroundColorAttributeName => LIGHT}
+      ],
       "^(\\*)\\s" => [
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
           NSParagraphStyleAttributeName => bullet},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
           NSForegroundColorAttributeName => LIGHT}
       ],
-      "^\\t" => [{NSFontAttributeName => font_manager.fontWithFamily("Menlo", traits: 0, weight: 0, size: 15),
-        NSBackgroundColorAttributeName => NSColor.lightGrayColor}]
+      "^(\\t)" => [
+        {NSFontAttributeName => font_manager.fontWithFamily("Menlo", traits: 0, weight: 0, size: 15),
+          NSBackgroundColorAttributeName => NSColor.lightGrayColor},
+        {NSFontAttributeName => font_manager.fontWithFamily("Menlo", traits: 0, weight: 0, size: 15),
+          NSBackgroundColorAttributeName => BACKGROUND}
+      ]
     }
 
     @replacements = {

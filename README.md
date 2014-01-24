@@ -25,3 +25,5 @@ Extended from [example](http://www.raywenderlich.com/50151/text-kit-tutorial).
 http://cocoafactory.com/blog/2012/10/29/how-to-use-custom-nsattributedstring-attributes/
 http://www.objc.io/issue-5/getting-to-know-textkit.html, perhaps to draw borders.
 http://hasseg.org/peg-markdown-highlight/peg-markdown-highlight.pdf
+
+http://kickcode.com/blog/2013/12/14/custom-ui-popup-panel-for-mac-os-x-status-bar-app-with-rubymotion.html

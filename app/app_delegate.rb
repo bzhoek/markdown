@@ -59,4 +59,16 @@ class AppDelegate
     textView
   end
 
+  def saveDocument(sender)
+    puts sender
+  end
+
+  def openDocument(sender)
+    panel = NSOpenPanel.openPanel
+    panel.allowsMultipleSelection = false
+    if panel.runModalForDirectory(NSHomeDirectory(), file: nil, types: nil) == NSOKButton
+      puts panel.filenames
+    end
+  end
+
 end

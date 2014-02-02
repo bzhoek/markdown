@@ -6,6 +6,7 @@ Extended from [example](http://www.raywenderlich.com/50151/text-kit-tutorial).
 * Bulleted lists with indents
 * Continuation of bulleted list
 * Negative indent of headers
+* Collection View https://developer.apple.com/library/mac/documentation/cocoa/Conceptual/CollectionViews/Introduction/Introduction.html
 
 
 ### Paragraph support

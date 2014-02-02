@@ -44,7 +44,7 @@ class AppDelegate
     layoutManager.addTextContainer(textContainer)
 
     @textStorage = MarkdownTextStorage.alloc.init
-    @textStorage.appendAttributedString(string)
+    @textStorage.setAttributedString(string)
     @textStorage.addLayoutManager(layoutManager)
 
     textView = NSTextView.alloc.initWithFrame(NSMakeRect(0, 0, contentSize.width, contentSize.height), textContainer: textContainer)
@@ -60,14 +60,15 @@ class AppDelegate
   end
 
   def saveDocument(sender)
-    puts sender
+    @textStorage.saveToFile()
   end
 
   def openDocument(sender)
     panel = NSOpenPanel.openPanel
     panel.allowsMultipleSelection = false
     if panel.runModalForDirectory(NSHomeDirectory(), file: nil, types: nil) == NSOKButton
-      puts panel.filenames
+      @textStorage.loadFromFile(panel.filenames[0])
+      #  http://www.cocoabuilder.com/archive/cocoa/44759-programatically-opening-an-nsdocument-subclass.html
     end
   end
 

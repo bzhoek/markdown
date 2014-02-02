@@ -7,6 +7,7 @@ class MarkdownTextStorage < NSTextStorage
   def init
     super
     @backingStore = NSMutableAttributedString.new
+    @file = "/Users/bas/sample.md"
     createStyles
     self
   end
@@ -205,6 +206,17 @@ class MarkdownTextStorage < NSTextStorage
         end
       )
     end
+  end
+
+  def loadFromFile(file)
+    @file = file
+    string = NSString.alloc.initWithContentsOfFile(file)
+    astring = NSAttributedString.alloc.initWithString(string)
+    self.setAttributedString(astring)
+  end
+
+  def saveToFile
+    @backingStore.string.writeToFile(@file, atomically: true)
   end
 
 end

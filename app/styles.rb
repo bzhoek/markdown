@@ -24,23 +24,23 @@ module Styles
 
     font_manager = NSFontManager.sharedFontManager
     @paragraphs = {
-      "^(#)\\s" => [
+      "^(#\\s+)\\w" => [
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 23),
           NSParagraphStyleAttributeName => heading},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 23),
           NSForegroundColorAttributeName => LIGHT}
       ],
-      "^(##)\\s" => [
+      "^(##\\s+)\\w" => [
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 21)},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 21),
           NSForegroundColorAttributeName => LIGHT}
       ],
-      "^(###)\\s" => [
+      "^(###\\s+)\\w" => [
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 19)},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 19),
           NSForegroundColorAttributeName => LIGHT}
       ],
-      "^(####)\\s" => [
+      "^(####\\s+)\\w" => [
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSBoldFontMask, weight: 0, size: 17)},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
           NSForegroundColorAttributeName => LIGHT}

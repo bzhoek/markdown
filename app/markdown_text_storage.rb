@@ -15,9 +15,6 @@ class MarkdownTextStorage < NSTextStorage
   def createStyles
     normal = NSMutableParagraphStyle.defaultParagraphStyle.mutableCopy
     normal.lineHeightMultiple = 1.2
-    normal.headIndent = 30
-    normal.tailIndent = -25
-    normal.firstLineHeadIndent = 30
 
     @normal = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17),
       NSForegroundColorAttributeName => TEXT,
@@ -28,14 +25,10 @@ class MarkdownTextStorage < NSTextStorage
     heading = NSMutableParagraphStyle.defaultParagraphStyle.mutableCopy
     heading.lineHeightMultiple = 1.2
     heading.headIndent = 12
-    heading.tailIndent = -25
-    heading.firstLineHeadIndent = 12
 
     bullet = NSMutableParagraphStyle.defaultParagraphStyle.mutableCopy
     bullet.lineHeightMultiple = 1.2
-    bullet.headIndent = 42
-    bullet.tailIndent = -25
-    bullet.firstLineHeadIndent = 30
+    bullet.headIndent = 12
 
     font_manager = NSFontManager.sharedFontManager
     @paragraphs = {

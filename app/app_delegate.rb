@@ -56,6 +56,7 @@ class AppDelegate
     textView.horizontallyResizable = false
     textView.autoresizingMask = NSViewWidthSizable
     textView.backgroundColor = BACKGROUND
+    textView.textContainerInset = CGSizeMake(12, 12)
     textView
   end
 

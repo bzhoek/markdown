@@ -45,7 +45,7 @@ module Styles
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
           NSForegroundColorAttributeName => LIGHT}
       ],
-      "^(\\*)\\s" => [
+      "^(\\s*\\*\\s+)\\w" => [
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),
           NSParagraphStyleAttributeName => bullet},
         {NSFontAttributeName => font_manager.fontWithFamily("Avenir Next", traits: NSUnboldFontMask, weight: 5, size: 17),

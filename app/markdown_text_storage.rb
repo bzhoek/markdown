@@ -88,9 +88,16 @@ class MarkdownTextStorage < NSTextStorage
       regex = NSRegularExpression.regularExpressionWithPattern(expression, options: 0, error: nil)
       regex.enumerateMatchesInString(@backingStore.string, options: 0, range: range,
         usingBlock: lambda do |match, flags, stop|
-          self.addAttributes(hash[0], range: range)
           if match.numberOfRanges > 1
+            slice = stringForRange(match.rangeAtIndex(1))
+            paragraph = NSMutableParagraphStyle.defaultParagraphStyle.mutableCopy
+            paragraph.lineHeightMultiple = 1.2
+            paragraph.headIndent = slice.sizeWithAttributes(hash[1]).width
+            self.addAttributes(hash[0].merge({NSParagraphStyleAttributeName => paragraph}), range: range)
+
             self.addAttributes(hash[1], range: match.rangeAtIndex(1))
+          else
+            self.addAttributes(hash[0], range: range)
           end
         end
       )

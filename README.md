@@ -1,11 +1,7 @@
 Extended from [example](http://www.raywenderlich.com/50151/text-kit-tutorial).
 
 # TODO
-* File open
-* File save
-* Bulleted lists with indents
 * Continuation of bulleted list
-* Negative indent of headers
 * Collection View https://developer.apple.com/library/mac/documentation/cocoa/Conceptual/CollectionViews/Introduction/Introduction.html
 * http://kickcode.com/blog/2013/12/14/custom-ui-popup-panel-for-mac-os-x-status-bar-app-with-rubymotion.html
 

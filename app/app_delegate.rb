@@ -2,27 +2,49 @@ class AppDelegate
 
   BACKGROUND = NSColor.colorWithCalibratedRed(239/255.0, green: 239/255.0, blue: 239/255.0, alpha: 1.0)
 
+  Document = Struct.new(:name, :modified, :message, :avatar, :url)
+
   def applicationDidFinishLaunching(notification)
     buildMenu
     buildWindow
   end
 
   def buildWindow
-    @mainWindow = NSWindow.alloc.initWithContentRect([[240, 180], [480, 360]],
+    @window = NSWindow.alloc.initWithContentRect([[240, 180], [400, 800]],
       styleMask: NSTitledWindowMask|NSClosableWindowMask|NSMiniaturizableWindowMask|NSResizableWindowMask,
       backing: NSBackingStoreBuffered,
       defer: false)
-    @mainWindow.title = NSBundle.mainBundle.infoDictionary['CFBundleName']
-    @mainWindow.orderFrontRegardless
+    @window.title = NSBundle.mainBundle.infoDictionary['CFBundleName']
+    @window.orderFrontRegardless
 
-    @scrollView = buildScrollView
-    @mainWindow.contentView= @scrollView
-    @mainWindow.makeFirstResponder(@scrollView)
+    @scrollView = buildCollectionView
+    @window.contentView= @scrollView
+    @window.makeFirstResponder(@scrollView)
   end
 
+  def buildCollectionView
+    scroll_view = NSScrollView.alloc.initWithFrame(@window.contentView.frame)
+    scroll_view.hasVerticalScroller = true
+
+    @collection_view = NSCollectionView.alloc.initWithFrame(scroll_view.frame)
+    @collection_view.setItemPrototype(DocumentPrototype.new)
+
+    scroll_view.documentView = @collection_view
+    @data = []
+    @data << Document.new("Registration keys for software", Date.of(2014, 2, 2), "message", "avatar", "url")
+    #@data << Document.new("Cone of uncertainty", Date.new(2014, 1, 3), "message", "avatar", "url")
+    #@data << Document.new("Laura", Date.new(2013, 12, 25), "message", "avatar", "url")
+    #@data << Document.new("OS X Shortcuts", Date.new(2013, 12, 24), "message", "avatar", "url")
+    #@data << Document.new("Angular promise", Date.new(2013, 12, 24), "message", "avatar", "url")
+    #@data << Document.new("Agile Atlas", Date.new(2013, 12, 11), "message", "avatar", "url")
+    @collection_view.setContent(@data)
+
+    #@window.contentView.addSubview(scroll_view)
+    scroll_view
+  end
 
   def buildScrollView
-    scrollView = NSScrollView.alloc.initWithFrame(@mainWindow.contentView.frame)
+    scrollView = NSScrollView.alloc.initWithFrame(@window.contentView.frame)
     contentSize = scrollView.contentSize
     scrollView.borderType = NSNoBorder
     scrollView.hasVerticalScroller = true
@@ -70,9 +92,23 @@ class AppDelegate
     if panel.runModalForDirectory(NSHomeDirectory(), file: nil, types: nil) == NSOKButton
       filename = panel.filenames[0]
       @textStorage.loadFromFile(filename)
-      @mainWindow.title = NSFileManager.defaultManager.displayNameAtPath(filename)
+      @window.title = NSFileManager.defaultManager.displayNameAtPath(filename)
       #  http://www.cocoabuilder.com/archive/cocoa/44759-programatically-opening-an-nsdocument-subclass.html
     end
+  end
+
+end
+
+class Date
+  FORMATTER = NSDateFormatter.alloc.init
+  FORMATTER.dateFormat = "yyyy-MM-dd"
+
+  def self.parse(string)
+    FORMATTER.dateFromString(string)
+  end
+
+  def self.of(year, month, day)
+    parse("#{year}-#{month}-#{day}")
   end
 
 end

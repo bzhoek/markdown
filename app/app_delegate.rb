@@ -10,16 +10,48 @@ class AppDelegate
   end
 
   def buildWindow
-    @window = NSWindow.alloc.initWithContentRect([[240, 180], [400, 800]],
+    @window = NSWindow.alloc.initWithContentRect([[240, 180], [600, 800]],
       styleMask: NSTitledWindowMask|NSClosableWindowMask|NSMiniaturizableWindowMask|NSResizableWindowMask,
       backing: NSBackingStoreBuffered,
       defer: false)
     @window.title = NSBundle.mainBundle.infoDictionary['CFBundleName']
     @window.orderFrontRegardless
 
-    @scrollView = buildCollectionView
+    @scrollView = buildSplitView
     @window.contentView= @scrollView
     @window.makeFirstResponder(@scrollView)
+  end
+
+  def buildSplitView
+    splitView = NSSplitView.alloc.initWithFrame(@window.contentView.bounds)
+    splitView.addSubview(buildCollectionView)
+    splitView.addSubview(buildMarkdownView)
+    splitView.vertical = true
+    splitView.delegate = self
+    splitView.setPosition(200, ofDividerAtIndex: 0)
+    splitView.adjustSubviews
+    splitView
+  end
+
+  def splitView(sender, resizeSubviewsWithOldSize: size)
+    puts sender.inspect
+    leftView = sender.subviews.objectAtIndex(0)
+    rightView = sender.subviews.objectAtIndex(1)
+
+    splitRect = sender.frame
+    dividerThickness = sender.dividerThickness
+
+    leftRect = leftView.frame
+    rightRect = rightView.frame
+
+    leftRect.size.height = splitRect.size.height
+    leftRect.origin = NSMakePoint(0, 0)
+    rightRect.size.width = splitRect.size.width - leftRect.size.width - dividerThickness
+    rightRect.size.height = splitRect.size.height
+    rightRect.origin.x = leftRect.size.width + dividerThickness
+
+    leftView.frame = leftRect
+    rightView.frame = rightRect
   end
 
   def buildCollectionView
@@ -43,7 +75,7 @@ class AppDelegate
     scroll_view
   end
 
-  def buildScrollView
+  def buildMarkdownView
     scrollView = NSScrollView.alloc.initWithFrame(@window.contentView.frame)
     contentSize = scrollView.contentSize
     scrollView.borderType = NSNoBorder

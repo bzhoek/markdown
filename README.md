@@ -1,7 +1,11 @@
-Extended from [example](http://www.raywenderlich.com/50151/text-kit-tutorial).
+# Markdown editor
 
-# TODO
+Style from https://github.com/kemiller/rubymotion-style-guide
+
+## TODO
 * Continuation of bulleted list
+
+## DONE
 * Collection View https://developer.apple.com/library/mac/documentation/cocoa/Conceptual/CollectionViews/Introduction/Introduction.html
 * http://kickcode.com/blog/2013/12/14/custom-ui-popup-panel-for-mac-os-x-status-bar-app-with-rubymotion.html
 
@@ -15,9 +19,6 @@ Extended from [example](http://www.raywenderlich.com/50151/text-kit-tutorial).
 * Underline with _
 * Strikethrough with -
 
-## BUGS
-* Initial load of text with newline repeats paragraph formatting on next line.
-
 # Icons
 Run `iconutil -c icns markdown.iconset`, then `rake clean` to update `resources/` folder.
 
@@ -27,3 +28,5 @@ http://www.objc.io/issue-5/getting-to-know-textkit.html, perhaps to draw borders
 http://hasseg.org/peg-markdown-highlight/peg-markdown-highlight.pdf
 
 http://kickcode.com/blog/2013/12/14/custom-ui-popup-panel-for-mac-os-x-status-bar-app-with-rubymotion.html
+
+Extended from [example](http://www.raywenderlich.com/50151/text-kit-tutorial).

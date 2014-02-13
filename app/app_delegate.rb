@@ -62,17 +62,20 @@ class AppDelegate
     @collection_view.setItemPrototype(DocumentPrototype.new)
 
     scroll_view.documentView = @collection_view
-    @data = []
-    @data << Document.new("Registration keys for software", Date.of(2014, 2, 2), "message", "avatar", "url")
-    #@data << Document.new("Cone of uncertainty", Date.new(2014, 1, 3), "message", "avatar", "url")
-    #@data << Document.new("Laura", Date.new(2013, 12, 25), "message", "avatar", "url")
-    #@data << Document.new("OS X Shortcuts", Date.new(2013, 12, 24), "message", "avatar", "url")
-    #@data << Document.new("Angular promise", Date.new(2013, 12, 24), "message", "avatar", "url")
-    #@data << Document.new("Agile Atlas", Date.new(2013, 12, 11), "message", "avatar", "url")
+    @data = getMarkdownFiles
     @collection_view.setContent(@data)
-
-    #@window.contentView.addSubview(scroll_view)
     scroll_view
+  end
+
+  def getMarkdownFiles
+    data = []
+    files = NSFileManager.defaultManager.contentsOfDirectoryAtPath(NSHomeDirectory(), error: nil)
+    markdowns = files.filteredArrayUsingPredicate(NSPredicate.predicateWithFormat("self ENDSWITH '.md'"))
+    markdowns.each do |file|
+      attrs = NSFileManager.defaultManager.attributesOfItemAtPath("#{NSHomeDirectory()}/#{file}", error: nil)
+      data << Document.new(file, attrs[NSFileModificationDate], "message", "avatar", "url")
+    end
+    data
   end
 
   def buildMarkdownView

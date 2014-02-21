@@ -25,9 +25,6 @@ class DocumentView < NSView
     @box.titlePosition = NSNoTitle
     self.addSubview(@box)
 
-    @avatar = NSImageView.alloc.initWithFrame(NSMakeRect(0, 0, 40, 40))
-    @box.addSubview(@avatar)
-
     @title = NSTextField.alloc.initWithFrame(NSMakeRect(0, 120, 160, 40))
     @title.font = NSFont.boldSystemFontOfSize(14)
     @title.bezeled = false
@@ -59,7 +56,7 @@ class DocumentView < NSView
     heading.lineBreakMode = NSLineBreakByWordWrapping
     attrs = {NSParagraphStyleAttributeName => heading}
     date = "#{FORMATTER.stringFromDate(object.modified)}"
-    string = NSMutableAttributedString.alloc.initWithString("#{date} summary", attributes: attrs)
+    string = NSMutableAttributedString.alloc.initWithString("#{date} #{object.summary}", attributes: attrs)
     string.addAttributes({NSForegroundColorAttributeName => LIGHT}, range: NSMakeRange(0, date.length))
     @summary.attributedStringValue = string
   end
@@ -68,7 +65,6 @@ class DocumentView < NSView
     return if object.nil?
     self.title = object.name
     self.summary = object
-    self.avatar.setImage(NSImage.alloc.initWithData(NSURL.URLWithString(object.avatar).resourceDataUsingCache(false)))
     @object = object
   end
 

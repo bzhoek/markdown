@@ -2,7 +2,7 @@ class AppDelegate
 
   BACKGROUND = NSColor.colorWithCalibratedRed(239/255.0, green: 239/255.0, blue: 239/255.0, alpha: 1.0)
 
-  Document = Struct.new(:name, :modified, :message, :avatar, :url)
+  Document = Struct.new(:name, :modified, :summary)
 
   def applicationDidFinishLaunching(notification)
     buildMenu
@@ -72,8 +72,10 @@ class AppDelegate
     files = NSFileManager.defaultManager.contentsOfDirectoryAtPath(NSHomeDirectory(), error: nil)
     markdowns = files.filteredArrayUsingPredicate(NSPredicate.predicateWithFormat("self ENDSWITH '.md'"))
     markdowns.each do |file|
-      attrs = NSFileManager.defaultManager.attributesOfItemAtPath("#{NSHomeDirectory()}/#{file}", error: nil)
-      data << Document.new(file, attrs[NSFileModificationDate], "message", "avatar", "url")
+      path = "#{NSHomeDirectory()}/#{file}"
+      attrs = NSFileManager.defaultManager.attributesOfItemAtPath(path, error: nil)
+      summary = NSString.alloc.initWithContentsOfFile(path).gsub(/\s+/, ' ')[0, 256]
+      data << Document.new(file, attrs[NSFileModificationDate], summary)
     end
     data
   end

@@ -126,10 +126,14 @@ class AppDelegate
     panel.allowsMultipleSelection = false
     if panel.runModalForDirectory(NSHomeDirectory(), file: nil, types: nil) == NSOKButton
       filename = panel.filenames[0]
-      @textStorage.loadFromFile(filename)
-      @window.title = NSFileManager.defaultManager.displayNameAtPath(filename)
+      loadDocument(filename)
       #  http://www.cocoabuilder.com/archive/cocoa/44759-programatically-opening-an-nsdocument-subclass.html
     end
+  end
+
+  def loadDocument(file)
+    @textStorage.loadFromFile(file)
+    @window.title = NSFileManager.defaultManager.displayNameAtPath(file)
   end
 
 end

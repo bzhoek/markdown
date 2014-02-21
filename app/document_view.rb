@@ -40,7 +40,7 @@ class DocumentView < NSView
     @summary.bezeled = false
     @summary.drawsBackground = false
     @summary.editable = false
-    @summary.selectable = true
+    @summary.selectable = false
     @summary.bezeled = true
     @box.addSubview(@summary)
 
@@ -72,7 +72,8 @@ class DocumentView < NSView
     @object = object
   end
 
-  #def mouseDown(event)
-  #  NSWorkspace.sharedWorkspace.openURL(NSURL.URLWithString(@object.url))
-  #end
+  def mouseDown(event)
+    NSApp.delegate.loadDocument("#{NSHomeDirectory()}/#{@object.name}")
+  end
+
 end

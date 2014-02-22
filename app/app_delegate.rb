@@ -75,7 +75,7 @@ class AppDelegate
       path = "#{NSHomeDirectory()}/#{file}"
       attrs = NSFileManager.defaultManager.attributesOfItemAtPath(path, error: nil)
       summary = NSString.alloc.initWithContentsOfFile(path).gsub(/\s+/, ' ')[0, 256]
-      data << Document.new(file, attrs[NSFileModificationDate], summary)
+      data << Document.new(path, attrs[NSFileModificationDate], summary)
     end
     data
   end

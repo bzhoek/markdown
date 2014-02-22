@@ -63,13 +63,13 @@ class DocumentView < NSView
 
   def setViewObject(object)
     return if object.nil?
-    self.title = object.name
+    self.title = object.name.lastPathComponent.stringByDeletingPathExtension
     self.summary = object
     @object = object
   end
 
   def mouseDown(event)
-    NSApp.delegate.loadDocument("#{NSHomeDirectory()}/#{@object.name}")
+    NSApp.delegate.loadDocument(@object.name)
   end
 
 end

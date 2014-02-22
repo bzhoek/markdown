@@ -121,8 +121,7 @@ class MarkdownTextStorage < NSTextStorage
   def loadFromFile(file)
     @file = file
     string = NSString.alloc.initWithContentsOfFile(file)
-    astring = NSAttributedString.alloc.initWithString(string)
-    self.setAttributedString(astring)
+    self.setAttributedString(NSAttributedString.alloc.initWithString(string))
   end
 
   def saveToFile

@@ -44,28 +44,34 @@ class DocumentView < NSView
     self
   end
 
-  def title=(string)
+  def update_title
+    title = @object.name.lastPathComponent.stringByDeletingPathExtension
     heading = NSMutableParagraphStyle.defaultParagraphStyle.mutableCopy
     heading.lineBreakMode = NSLineBreakByWordWrapping
     attrs = {NSParagraphStyleAttributeName => heading}
-    @title.attributedStringValue = NSAttributedString.alloc.initWithString(string, attributes: attrs)
+    @title.attributedStringValue = NSAttributedString.alloc.initWithString(title, attributes: attrs)
   end
 
-  def summary=(object)
+  def update_summary
     heading = NSMutableParagraphStyle.defaultParagraphStyle.mutableCopy
     heading.lineBreakMode = NSLineBreakByWordWrapping
     attrs = {NSParagraphStyleAttributeName => heading}
-    date = "#{FORMATTER.stringFromDate(object.modified)}"
-    string = NSMutableAttributedString.alloc.initWithString("#{date} #{object.summary}", attributes: attrs)
+    date = "#{FORMATTER.stringFromDate(@object.modified)}"
+    string = NSMutableAttributedString.alloc.initWithString("#{date} #{@object.summary}", attributes: attrs)
     string.addAttributes({NSForegroundColorAttributeName => LIGHT}, range: NSMakeRange(0, date.length))
     @summary.attributedStringValue = string
   end
 
   def setViewObject(object)
     return if object.nil?
-    self.title = object.name.lastPathComponent.stringByDeletingPathExtension
-    self.summary = object
     @object = object
+    @object.addObserver(self, forKeyPath: "summary", options: NSKeyValueObservingOptionNew, context: nil)
+    update_title
+    update_summary
+  end
+
+  def observeValueForKeyPath(path, ofObject: object, change: change, context: context)
+    update_summary
   end
 
   def mouseDown(event)

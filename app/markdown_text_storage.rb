@@ -10,6 +10,10 @@ class MarkdownTextStorage < NSTextStorage
     self
   end
 
+  def file
+    @file
+  end
+
   def string
     @backingStore.string
   end

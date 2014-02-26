@@ -1,8 +1,17 @@
+class Document
+  attr_accessor :name, :modified, :summary
+
+  def initialize(name, modified, summary)
+    @name = name
+    @modified = modified
+    @summary = summary
+  end
+
+end
+
 class AppDelegate
 
   BACKGROUND = NSColor.colorWithCalibratedRed(239/255.0, green: 239/255.0, blue: 239/255.0, alpha: 1.0)
-
-  Document = Struct.new(:name, :modified, :summary)
 
   def applicationDidFinishLaunching(notification)
     buildMenu
@@ -74,10 +83,14 @@ class AppDelegate
     markdowns.each do |file|
       path = "#{NSHomeDirectory()}/#{file}"
       attrs = NSFileManager.defaultManager.attributesOfItemAtPath(path, error: nil)
-      summary = NSString.alloc.initWithContentsOfFile(path).gsub(/\s+/, ' ')[0, 256]
-      data << Document.new(path, attrs[NSFileModificationDate], summary)
+      content = NSString.alloc.initWithContentsOfFile(path)
+      data << Document.new(path, attrs[NSFileModificationDate], summarize(content))
     end
     data
+  end
+
+  def summarize(content)
+    content.gsub(/\s+/, ' ')[0, 256]
   end
 
   def buildMarkdownView
@@ -120,6 +133,11 @@ class AppDelegate
   end
 
   def saveDocument(sender)
+    @data.each do |document|
+      if document.name == @textStorage.file
+        document.summary = summarize(@textStorage.string)
+      end
+    end
     @textStorage.saveToFile()
   end
 
@@ -127,8 +145,7 @@ class AppDelegate
     panel = NSOpenPanel.openPanel
     panel.allowsMultipleSelection = false
     if panel.runModalForDirectory(NSHomeDirectory(), file: nil, types: nil) == NSOKButton
-      filename = panel.filenames[0]
-      loadDocument(filename)
+      loadDocument(panel.filenames[0])
       #  http://www.cocoabuilder.com/archive/cocoa/44759-programatically-opening-an-nsdocument-subclass.html
     end
   end

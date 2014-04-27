@@ -106,7 +106,7 @@ class AppDelegate
 
   def buildTextView(contentSize)
     attrs = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17)}
-    string = NSAttributedString.alloc.initWithString("# Start\nHello, _world_ , -strike- that, but say something *bold* and `quoted` .\n\n *  You would expect multi-line bullets to indent over multple lines\n\tThis is code\n\tAnd this too", attributes: attrs)
+    string = NSAttributedString.alloc.initWithString("# Start\nHello, _world_ , -strike- that, but say something *bold* and `quoted` .\n\n *  You would expect multi-line bullets to indent over multiple lines\n\tThis is code\n\tAnd this too\n!(spec/bas.png) \n\n  ", attributes: attrs)
 
     containerSize = CGSizeMake(contentSize.width, CGFLOAT_MAX)
     textContainer = NSTextContainer.alloc.initWithContainerSize(containerSize)
@@ -121,7 +121,7 @@ class AppDelegate
 
     textView = NSTextView.alloc.initWithFrame(NSMakeRect(0, 0, contentSize.width, contentSize.height), textContainer: textContainer)
     textView.allowsUndo = true
-    textView.setSelectedRange(NSMakeRange(2, 0))
+    #textView.setSelectedRange(NSMakeRange(2, 0))
     textView.minSize = NSMakeSize(0, contentSize.height)
     textView.maxSize = NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX)
     textView.verticallyResizable = true

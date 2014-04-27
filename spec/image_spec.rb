@@ -1,3 +1,28 @@
+class AttributedString
+
+  def initialize(string)
+    attrs = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17)}
+    @string = NSMutableAttributedString.alloc.initWithString(string, attributes: attrs)
+  end
+
+  def insert_image(path, index)
+    image = NSImage.alloc.initWithContentsOfFile(path)
+    attachment = NSTextAttachment.alloc.init
+    attachment.setAttachmentCell(NSTextAttachmentCell.alloc.initImageCell(image))
+    string = NSAttributedString.attributedStringWithAttachment(attachment)
+    @string.insertAttributedString(string, atIndex: index)
+  end
+
+  def has_attachments
+    rangeLimit = NSMakeRange(0, @string.length)
+    range = Pointer.new(NSRange.type)
+    location = 0
+    attributes = @string.attributesAtIndex(location, longestEffectiveRange: range, inRange: rangeLimit)
+    attributes[:NSAttachment].class == NSTextAttachment
+  end
+
+end
+
 describe "image" do
 
   before do
@@ -20,6 +45,13 @@ describe "image" do
     location = 0
     attributes = attributedString.attributesAtIndex(location, longestEffectiveRange: range, inRange: rangeLimit)
     attributes[:NSAttachment].class.should == NSTextAttachment
+  end
+
+  it "should find an attachment" do
+    subject = AttributedString.new("bla")
+    subject.has_attachments.should == false
+    subject.insert_image("spec/bas.png", 0)
+    subject.has_attachments.should == true
   end
 
 end

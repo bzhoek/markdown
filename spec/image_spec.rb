@@ -7,6 +7,7 @@ class AttributedString
 
   def insert_image(path, index)
     image = NSImage.alloc.initWithContentsOfFile(path)
+    raise "File #{path} not found" if image.nil?
     attachment = NSTextAttachment.alloc.init
     attachment.setAttachmentCell(NSTextAttachmentCell.alloc.initImageCell(image))
     string = NSAttributedString.attributedStringWithAttachment(attachment)
@@ -52,6 +53,11 @@ describe "image" do
     subject.has_attachments.should == false
     subject.insert_image("spec/bas.png", 0)
     subject.has_attachments.should == true
+  end
+
+  it "should raise an exception for missing image" do
+    subject = AttributedString.new("bla")
+    lambda { subject.insert_image("spec/404.png", 0) }.should.raise(RuntimeError)
   end
 
 end

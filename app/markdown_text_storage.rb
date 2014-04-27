@@ -45,12 +45,12 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def processEditing
-    super
     processEditingRange(self.editedRange)
+    super
   end
 
   def processEditingRange(range)
-    NSLog("processEditingRange: #{range.inspect}")
+    NSLog("processEditingRange 1: #{range.inspect}")
     if range.length == 1 && stringForRange(range) == "\n"
       line = lineRangeForLocation(range.location+1)
       NSLog("next: #{stringForRange(line).dump}")
@@ -58,15 +58,16 @@ class MarkdownTextStorage < NSTextStorage
     end
 
     line = lineRangeForLocation(range.location)
+    NSLog("processEditingRange 2: #{line.inspect}")
     self.applyStylesToLine(line)
 
     index = line.length
     while index < range.length
       line = lineRangeForLocation(range.location + index)
+      NSLog("processEditingRange 3: #{line.inspect}")
       self.applyStylesToLine(line)
       index += line.length
     end
-    NSLog("processEditingRange")
   end
 
   def lineRangeForLocation(location)
@@ -78,34 +79,40 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def groupEdits
+    NSLog(">>beginEditing")
     self.beginEditing
     yield if block_given?
     self.endEditing
+    NSLog(">>endEditing")
   end
 
   def applyStylesToLine(line)
-    NSLog("applyStylesToRange: #{line.inspect}: #{stringForRange(line)}")
+    NSLog("applyStylesToLine: #{line.inspect}: #{stringForRange(line)}")
 
-    self.addAttributes(@normal, range: line)
+    # self.addAttributes(@normal, range: line)
 
     applyParagraphStyles(line)
-    applyImageCommands(line)
     applyCharacterStyles(line)
+    applyImageCommands(line)
   end
 
   def applyImageCommands(line)
-
     regex = NSRegularExpression.regularExpressionWithPattern("\\!\\((.+?)\\)", options: 0, error: nil)
     regex.enumerateMatchesInString(@backingStore.string, options: 0, range: line,
       usingBlock: lambda do |match, flags, stop|
-        range_at_index = match.rangeAtIndex(1)
-        NSLog(range_at_index.inspect)
-        path = stringForRange(range_at_index)
-        image = NSImage.alloc.initWithContentsOfFile(path)
-        attachment = NSTextAttachment.alloc.init
-        attachment.setAttachmentCell(NSTextAttachmentCell.alloc.initImageCell(image))
-        string = NSAttributedString.attributedStringWithAttachment(attachment)
-        @backingStore.insertAttributedString(string, atIndex: line.location + line.length)
+        groupEdits do
+          range_at_index = match.rangeAtIndex(1)
+          NSLog(range_at_index.inspect)
+          path = stringForRange(range_at_index)
+          image = NSImage.alloc.initWithContentsOfFile(path)
+          attachment = NSTextAttachment.alloc.init
+          attachment.setAttachmentCell(NSTextAttachmentCell.alloc.initImageCell(image))
+          string = NSAttributedString.attributedStringWithAttachment(attachment)
+          NSLog("#{@backingStore.length}")
+          @backingStore.insertAttributedString(string, atIndex: line.location)
+          NSLog("#{@backingStore.length}")
+          self.edited(NSTextStorageEditedCharacters, range: NSMakeRange(line.location, 1), changeInLength: string.length)
+        end
       end
     )
   end

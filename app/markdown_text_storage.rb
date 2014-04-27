@@ -18,12 +18,16 @@ class MarkdownTextStorage < NSTextStorage
     @backingStore.string
   end
 
+  def length
+    @backingStore.length
+  end
+
   def attributesAtIndex(location, effectiveRange: range)
     @backingStore.attributesAtIndex(location, effectiveRange: range)
   end
 
   def replaceCharactersInRange(range, withString: str)
-    puts "replaceCharactersInRange: #{NSStringFromRange(range)} withString: #{str}"
+    NSLog("replaceCharactersInRange: #{range.inspect} #{NSStringFromRange(range)} withString: #{str} length #{str.length}")
 
     groupEdits do
       @backingStore.replaceCharactersInRange(range, withString: str)
@@ -32,7 +36,7 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def setAttributes(attrs, range: range)
-    #puts "setAttributes: #{attrs} range:#{NSStringFromRange(range)}"
+    NSLog("setAttributes: #{attrs} line:#{NSStringFromRange(range)}")
 
     groupEdits do
       @backingStore.setAttributes(attrs, range: range)
@@ -46,22 +50,23 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def processEditingRange(range)
-    puts "editedRange: #{range.inspect}"
+    NSLog("processEditingRange: #{range.inspect}")
     if range.length == 1 && stringForRange(range) == "\n"
       line = lineRangeForLocation(range.location+1)
-      puts "next: #{stringForRange(line).dump}"
-      self.applyStylesToRange(line)
+      NSLog("next: #{stringForRange(line).dump}")
+      self.applyStylesToLine(line)
     end
 
     line = lineRangeForLocation(range.location)
-    self.applyStylesToRange(line)
+    self.applyStylesToLine(line)
 
     index = line.length
     while index < range.length
       line = lineRangeForLocation(range.location + index)
-      self.applyStylesToRange(line)
+      self.applyStylesToLine(line)
       index += line.length
     end
+    NSLog("processEditingRange")
   end
 
   def lineRangeForLocation(location)
@@ -78,13 +83,31 @@ class MarkdownTextStorage < NSTextStorage
     self.endEditing
   end
 
-  def applyStylesToRange(range)
-    puts "applyStylesToRange: #{range.inspect}: #{stringForRange(range)}"
+  def applyStylesToLine(line)
+    NSLog("applyStylesToRange: #{line.inspect}: #{stringForRange(line)}")
 
-    self.addAttributes(@normal, range: range)
+    self.addAttributes(@normal, range: line)
 
-    applyParagraphStyles(range)
-    applyCharacterStyles(range)
+    applyParagraphStyles(line)
+    applyImageCommands(line)
+    applyCharacterStyles(line)
+  end
+
+  def applyImageCommands(line)
+
+    regex = NSRegularExpression.regularExpressionWithPattern("\\!\\((.+?)\\)", options: 0, error: nil)
+    regex.enumerateMatchesInString(@backingStore.string, options: 0, range: line,
+      usingBlock: lambda do |match, flags, stop|
+        range_at_index = match.rangeAtIndex(1)
+        NSLog(range_at_index.inspect)
+        path = stringForRange(range_at_index)
+        image = NSImage.alloc.initWithContentsOfFile(path)
+        attachment = NSTextAttachment.alloc.init
+        attachment.setAttachmentCell(NSTextAttachmentCell.alloc.initImageCell(image))
+        string = NSAttributedString.attributedStringWithAttachment(attachment)
+        @backingStore.insertAttributedString(string, atIndex: line.location + line.length)
+      end
+    )
   end
 
   def applyParagraphStyles(range)

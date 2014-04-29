@@ -95,7 +95,7 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def applyImageCommands(line)
-    regex = NSRegularExpression.regularExpressionWithPattern("\\!\\((.+?)\\)", options: 0, error: nil)
+    regex = NSRegularExpression.regularExpressionWithPattern("^\\!\\((.+?)\\)", options: 0, error: nil)
     regex.enumerateMatchesInString(@backingStore.string, options: 0, range: line,
       usingBlock: lambda do |match, flags, stop|
         groupEdits do

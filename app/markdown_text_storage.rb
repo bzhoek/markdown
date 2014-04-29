@@ -74,6 +74,14 @@ class MarkdownTextStorage < NSTextStorage
     @backingStore.string.lineRangeForRange(NSMakeRange(location, 0))
   end
 
+  def rangeHasAttachments(range)
+    (0..range.length-1).each { |index|
+      attributes = @backingStore.attributesAtIndex(range.location + index, effectiveRange: nil)
+      return true if attributes[:NSAttachment].class == NSTextAttachment
+    }
+    false
+  end
+
   def stringForRange(range)
     @backingStore.string.substringWithRange(range)
   end
@@ -95,6 +103,7 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def applyImageCommands(line)
+    return if rangeHasAttachments(line)
     regex = NSRegularExpression.regularExpressionWithPattern("^\\!\\((.+?)\\)", options: 0, error: nil)
     regex.enumerateMatchesInString(@backingStore.string, options: 0, range: line,
       usingBlock: lambda do |match, flags, stop|

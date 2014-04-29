@@ -3,11 +3,11 @@ class MarkdownTextStorage < NSTextStorage
   include Styles
 
   def init
-    super
-    @backingStore = NSMutableAttributedString.new
-    @file = "/Users/bas/sample.md"
-    createStyles
-    self
+    super.tap do
+      @backingStore = NSMutableAttributedString.new
+      @file = "/Users/bas/sample.md"
+      createStyles
+    end
   end
 
   def file

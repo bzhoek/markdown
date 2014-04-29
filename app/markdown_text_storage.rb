@@ -79,17 +79,15 @@ class MarkdownTextStorage < NSTextStorage
   end
 
   def groupEdits
-    NSLog(">>beginEditing")
     self.beginEditing
     yield if block_given?
     self.endEditing
-    NSLog(">>endEditing")
   end
 
   def applyStylesToLine(line)
     NSLog("applyStylesToLine: #{line.inspect}: #{stringForRange(line)}")
 
-    # self.addAttributes(@normal, range: line)
+    self.addAttributes(@normal, range: line)
 
     applyParagraphStyles(line)
     applyCharacterStyles(line)

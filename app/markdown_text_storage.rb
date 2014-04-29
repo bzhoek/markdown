@@ -98,16 +98,19 @@ class MarkdownTextStorage < NSTextStorage
     regex = NSRegularExpression.regularExpressionWithPattern("\\!\\((.+?)\\)", options: 0, error: nil)
     regex.enumerateMatchesInString(@backingStore.string, options: 0, range: line,
       usingBlock: lambda do |match, flags, stop|
-        range_at_index = match.rangeAtIndex(1)
-        NSLog(range_at_index.inspect)
-        path = stringForRange(range_at_index)
-        image = NSImage.alloc.initWithContentsOfFile(path)
-        attachment = NSTextAttachment.alloc.init
-        attachment.setAttachmentCell(NSTextAttachmentCell.alloc.initImageCell(image))
-        string = NSAttributedString.attributedStringWithAttachment(attachment)
-        NSLog("#{@backingStore.length}")
-        @backingStore.insertAttributedString(string, atIndex: line.location)
-        NSLog("#{@backingStore.length}")
+        groupEdits do
+          range_at_index = match.rangeAtIndex(1)
+          NSLog(range_at_index.inspect)
+          path = stringForRange(range_at_index)
+          image = NSImage.alloc.initWithContentsOfFile(path)
+          attachment = NSTextAttachment.alloc.init
+          attachment.setAttachmentCell(NSTextAttachmentCell.alloc.initImageCell(image))
+          string = NSAttributedString.attributedStringWithAttachment(attachment)
+          NSLog("#{@backingStore.length}")
+          @backingStore.insertAttributedString(string, atIndex: line.location)
+          NSLog("#{@backingStore.length}")
+          self.edited(NSTextStorageEditedCharacters, range: NSMakeRange(line.location, 1), changeInLength: string.length)
+        end
       end
     )
   end

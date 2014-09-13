@@ -115,7 +115,7 @@ class AppDelegate
 
     # !(spec/bas.png)
     attrs = {NSFontAttributeName => NSFont.fontWithName("Avenir Next", size: 17)}
-    string = NSAttributedString.alloc.initWithString("# Start\nHello, _world_ , -strike- that, but say something *bold* and `quoted` .\n\n *  You would expect multi-line bullets to indent over multiple lines\n\tThis is code\n\tAnd this too\n!(spec/bas.png)\n\n  ", attributes: attrs)
+    string = NSAttributedString.alloc.initWithString("# Start\nHello, _world_ , -strike- that, but say something *bold* and `quoted` .\n\n *  You would expect multi-line bullets to indent over multiple lines\n\tThis is code\n\tAnd this too\n !(spec/bas.png)\n\n", attributes: attrs)
     @textStorage = MarkdownTextStorage.alloc.init
     @textStorage.setAttributedString(string)
     @textStorage.addLayoutManager(layoutManager)

@@ -29,7 +29,7 @@ class MarkdownTextStorage < NSTextStorage
   def replaceCharactersInRange(range, withString: str)
     NSLog("replaceCharactersInRange: #{range.inspect} #{NSStringFromRange(range)} withString: #{str} length #{str.length}")
 
-    groupEdits do
+    batchEdits do
       @backingStore.replaceCharactersInRange(range, withString: str)
       self.edited(NSTextStorageEditedCharacters | NSTextStorageEditedAttributes, range: range, changeInLength: str.length - range.length)
     end
@@ -38,7 +38,7 @@ class MarkdownTextStorage < NSTextStorage
   def setAttributes(attrs, range: range)
     NSLog("setAttributes: #{attrs} line:#{NSStringFromRange(range)}")
 
-    groupEdits do
+    batchEdits do
       @backingStore.setAttributes(attrs, range: range)
       self.edited(NSTextStorageEditedAttributes, range: range, changeInLength: 0)
     end
@@ -86,7 +86,7 @@ class MarkdownTextStorage < NSTextStorage
     @backingStore.string.substringWithRange(range)
   end
 
-  def groupEdits
+  def batchEdits
     self.beginEditing
     yield if block_given?
     self.endEditing
@@ -107,7 +107,7 @@ class MarkdownTextStorage < NSTextStorage
     regex = NSRegularExpression.regularExpressionWithPattern("^\\!\\((.+?)\\)", options: 0, error: nil)
     regex.enumerateMatchesInString(@backingStore.string, options: 0, range: line,
       usingBlock: lambda do |match, flags, stop|
-        groupEdits do
+        batchEdits do
           range_at_index = match.rangeAtIndex(1)
           NSLog(range_at_index.inspect)
           path = stringForRange(range_at_index)
